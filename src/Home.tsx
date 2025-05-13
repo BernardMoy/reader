@@ -1,5 +1,6 @@
 import { Box, TextField, Typography } from "@mui/material";
 import { CONTENT_MARGIN, TITLE_MARGIN } from "./Values";
+import Topbar from "./Topbar";
 
 export default function Home() {
   return (
@@ -11,18 +12,8 @@ export default function Home() {
         gap: TITLE_MARGIN,
       }}
     >
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "start",
-          gap: CONTENT_MARGIN,
-        }}
-      >
-        <Typography variant="h4" sx={{ flexGrow: 1 }}>
-          Speed reader
-        </Typography>
-      </Box>
+      {/* The top bar */}
+      {Topbar()}
     </Box>
   );
 }
