@@ -2,8 +2,12 @@ import { Box, TextField, Typography } from "@mui/material";
 import { CONTENT_MARGIN, TITLE_MARGIN } from "./Values";
 import Topbar from "./Topbar";
 import Content from "./Content";
+import { useState } from "react";
 
 export default function Home() {
+  // the text entered into the paragraph
+  const [mainText, setMainText] = useState<String>("");
+
   return (
     <Box
       sx={{
@@ -25,7 +29,7 @@ export default function Home() {
           flexGrow: 1,
         }}
       >
-        {Content()}
+        {Content({ text: mainText })}
       </Box>
     </Box>
   );
