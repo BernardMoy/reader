@@ -12,7 +12,7 @@ export default function Home() {
         justifyContent: "start",
         gap: TITLE_MARGIN,
         height: "100vh", // The outer box need to have the size of the screen to push elements using flex grow
-        width: "100vh",
+        width: "100vw",
       }}
     >
       {/* The top bar */}

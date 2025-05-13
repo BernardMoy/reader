@@ -7,11 +7,11 @@ export default function Topbar() {
       sx={{
         display: "flex",
         flexDirection: "row",
-        justifyContent: "start",
+        justifyContent: "start", // alignment
         gap: TITLE_MARGIN,
       }}
     >
-      <Typography variant="h4" sx={{ flexGrow: 1 }}>
+      <Typography variant="h4" sx={{}}>
         Speed reader
       </Typography>
     </Box>
