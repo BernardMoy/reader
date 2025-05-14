@@ -32,7 +32,7 @@ export default function Home() {
           flexGrow: 1,
         }}
       >
-        {Content({ text: mainText })}
+        {Content({ text: mainText, setText: setMainText })}
       </Box>
     </Box>
   );
