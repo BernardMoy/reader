@@ -1,5 +1,5 @@
 import { Box, TextField, Typography } from "@mui/material";
-import { CONTENT_MARGIN, TITLE_MARGIN } from "./Values";
+import { CONTENT_MARGIN, PAGE_MARGIN, TITLE_MARGIN } from "./Values";
 import Topbar from "./Topbar";
 import Content from "./Content";
 import { useState } from "react";
@@ -11,10 +11,13 @@ export default function Home() {
   return (
     <Box
       sx={{
+        boxSizing: "border-box",
+        px: PAGE_MARGIN, // margin around the full webpage
+        py: TITLE_MARGIN,
         display: "flex",
         flexDirection: "column",
         justifyContent: "start",
-        gap: TITLE_MARGIN,
+        gap: TITLE_MARGIN, // vertical margin between elements
         height: "100vh", // The outer box need to have the size of the screen to push elements using flex grow
         width: "100vw",
       }}
