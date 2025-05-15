@@ -1,7 +1,7 @@
 import { Box, TextField } from "@mui/material";
 import { CONTENT_MARGIN, MIN_TEXTFIELD_HEIGHT, TITLE_MARGIN } from "./Values";
 import type React from "react";
-import type { SetStateAction } from "react";
+import { useState, type SetStateAction } from "react";
 
 export interface Props {
   text: String;
@@ -9,6 +9,11 @@ export interface Props {
 }
 
 export default function Content({ text, setText }: Props) {
+  // store the initial wpm, final wpm and also the duration
+  const [initialwpm, setInitialWpm] = useState<number>(0);
+  const [finalwpm, setFinalWpm] = useState<number>(0);
+  const [duration, setDuration] = useState<number>(0);
+
   return (
     <Box
       display="flex"
@@ -49,6 +54,8 @@ export default function Content({ text, setText }: Props) {
           variant="outlined"
           type="number"
           multiline={false}
+          value={initialwpm}
+          onChange={(n) => setInitialWpm(Number(n.target.value))}
         />
 
         <TextField
@@ -57,6 +64,8 @@ export default function Content({ text, setText }: Props) {
           variant="outlined"
           type="number"
           multiline={false}
+          value={finalwpm}
+          onChange={(n) => setFinalWpm(Number(n.target.value))}
         />
 
         <TextField
@@ -65,6 +74,8 @@ export default function Content({ text, setText }: Props) {
           variant="outlined"
           type="number"
           multiline={false}
+          value={duration}
+          onChange={(n) => setDuration(Number(n.target.value))} // cast to number
         />
       </Box>
     </Box>
