@@ -10,9 +10,9 @@ export interface Props {
 
 export default function Content({ text, setText }: Props) {
   // store the initial wpm, final wpm and also the duration
-  const [initialwpm, setInitialWpm] = useState<number>(0);
-  const [finalwpm, setFinalWpm] = useState<number>(0);
-  const [duration, setDuration] = useState<number>(0);
+  const [initialwpm, setInitialWpm] = useState<number>(200);
+  const [finalwpm, setFinalWpm] = useState<number>(200);
+  const [duration, setDuration] = useState<number>(10);
 
   return (
     <Box

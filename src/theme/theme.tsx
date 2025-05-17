@@ -4,10 +4,10 @@ import "@fontsource/open-sans";
 const theme = createTheme({
   palette: {
     primary: {
-      main: "#d6366c",
+      main: "#1893d6",
     },
     secondary: {
-      main: "#1f99d1",
+      main: "#81dbd8",
     },
   },
   typography: {
