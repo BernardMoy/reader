@@ -1,4 +1,4 @@
-import { Box, TextField } from "@mui/material";
+import { Box, TextField, Typography } from "@mui/material";
 import { CONTENT_MARGIN, MIN_TEXTFIELD_HEIGHT, TITLE_MARGIN } from "./Values";
 import type React from "react";
 import { useState, type SetStateAction } from "react";
@@ -42,6 +42,11 @@ export default function Content({ text, setText }: Props) {
           },
         }}
       />
+
+      {/* The box for displaying large text */}
+      <Typography variant="h1" align="center">
+        Large
+      </Typography>
 
       <Box
         display="flex"
