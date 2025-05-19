@@ -18,6 +18,7 @@ export default function Content({ text, setText }: Props) {
   const [duration, setDuration] = useState<number>(10);
 
   // store the current word to be displayed, or none if there aren't any
+  // if current word is none, then it is not in a displaying state
   const [currentWord, setCurrentWord] = useState<String | null>(null);
 
   return (
@@ -51,7 +52,11 @@ export default function Content({ text, setText }: Props) {
 
       {/* The box for displaying large text */}
       {currentWord !== null && (
-        <Typography variant="h1" align="center">
+        <Typography
+          variant="h1"
+          align="center"
+          minHeight={MIN_TEXTFIELD_HEIGHT}
+        >
           {currentWord}
         </Typography>
       )}
@@ -121,7 +126,9 @@ export default function Content({ text, setText }: Props) {
             color="secondary"
             startIcon={<StopCircleIcon />}
             variant="contained"
-            onClick={() => {}}
+            onClick={() => {
+              setCurrentWord(null);
+            }}
           />
         )}
       </Box>
