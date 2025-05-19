@@ -4,6 +4,7 @@ import type React from "react";
 import { useState, type SetStateAction } from "react";
 import CustomButton from "./CustomButton";
 import PlayCircleFilledWhiteIcon from "@mui/icons-material/PlayCircleFilledWhite";
+import StopCircleIcon from "@mui/icons-material/StopCircle";
 
 export interface Props {
   text: String;
@@ -51,7 +52,7 @@ export default function Content({ text, setText }: Props) {
       {/* The box for displaying large text */}
       {currentWord !== null && (
         <Typography variant="h1" align="center">
-          currentWord
+          {currentWord}
         </Typography>
       )}
 
@@ -101,13 +102,28 @@ export default function Content({ text, setText }: Props) {
         </Box>
 
         {/* Start button with icon */}
-        <CustomButton
-          text="Start"
-          color="primary"
-          startIcon={<PlayCircleFilledWhiteIcon />}
-          variant="contained"
-          onClick={() => {}}
-        />
+        {currentWord === null && (
+          <CustomButton
+            text="Start"
+            color="primary"
+            startIcon={<PlayCircleFilledWhiteIcon />}
+            variant="contained"
+            onClick={() => {
+              setCurrentWord("temp");
+            }}
+          />
+        )}
+
+        {/* Stop button with icon */}
+        {currentWord !== null && (
+          <CustomButton
+            text="Stop"
+            color="secondary"
+            startIcon={<StopCircleIcon />}
+            variant="contained"
+            onClick={() => {}}
+          />
+        )}
       </Box>
     </Box>
   );
