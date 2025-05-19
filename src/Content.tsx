@@ -16,6 +16,9 @@ export default function Content({ text, setText }: Props) {
   const [finalwpm, setFinalWpm] = useState<number>(200);
   const [duration, setDuration] = useState<number>(10);
 
+  // store the current word to be displayed, or none if there aren't any
+  const [currentWord, setCurrentWord] = useState<String | null>(null);
+
   return (
     <Box
       display="flex"
@@ -24,29 +27,33 @@ export default function Content({ text, setText }: Props) {
       sx={{ width: "100%" }}
     >
       {/* The main textfield for entering the paragraph */}
-      <TextField
-        id="main-textfield"
-        label="Text"
-        placeholder="Enter or paste your paragraph here..."
-        variant="outlined"
-        multiline={true}
-        value={text}
-        onChange={(text) => setText(text.target.value)}
-        slotProps={{
-          input: {
-            sx: {
-              "& textarea": {
-                minHeight: MIN_TEXTFIELD_HEIGHT, // set the min height for the textfield by changing the textarea
+      {currentWord === null && (
+        <TextField
+          id="main-textfield"
+          label="Text"
+          placeholder="Enter or paste your paragraph here..."
+          variant="outlined"
+          multiline={true}
+          value={text}
+          onChange={(text) => setText(text.target.value)}
+          slotProps={{
+            input: {
+              sx: {
+                "& textarea": {
+                  minHeight: MIN_TEXTFIELD_HEIGHT, // set the min height for the textfield by changing the textarea
+                },
               },
             },
-          },
-        }}
-      />
+          }}
+        />
+      )}
 
       {/* The box for displaying large text */}
-      <Typography variant="h1" align="center">
-        Large
-      </Typography>
+      {currentWord !== null && (
+        <Typography variant="h1" align="center">
+          currentWord
+        </Typography>
+      )}
 
       <Box
         display="flex"
@@ -84,7 +91,7 @@ export default function Content({ text, setText }: Props) {
 
           <TextField
             id="duration-textfield"
-            label="Duration"
+            label="Duration (s)"
             variant="outlined"
             type="number"
             multiline={false}
