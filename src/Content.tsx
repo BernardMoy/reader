@@ -5,18 +5,22 @@ import { useState, type SetStateAction } from "react";
 import CustomButton from "./CustomButton";
 import PlayCircleFilledWhiteIcon from "@mui/icons-material/PlayCircleFilledWhite";
 import StopCircleIcon from "@mui/icons-material/StopCircle";
+import split from "./Split";
 
+// function to delay execution in ms
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+// async function to sequentially set the current word with delays to achieve displaying words one by one
 async function play(
   wordList: String[],
   setCurrentWord: React.Dispatch<React.SetStateAction<String | null>>
 ) {
-  setCurrentWord("First");
-  await sleep(2000);
-  setCurrentWord("Second");
+  for (const w of wordList) {
+    setCurrentWord(w);
+    await sleep(800);
+  }
 }
 
 export interface Props {
@@ -127,7 +131,11 @@ export default function Content({ text, setText }: Props) {
             startIcon={<PlayCircleFilledWhiteIcon />}
             variant="contained"
             onClick={async () => {
-              await play([], setCurrentWord);
+              // split the text into word list using the split function
+              const wordList = split(text);
+
+              // call the play function to display the words
+              await play(wordList, setCurrentWord);
             }}
           />
         )}
