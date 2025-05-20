@@ -15,11 +15,15 @@ function sleep(ms: number): Promise<void> {
 // async function to sequentially set the current word with delays to achieve displaying words one by one
 async function play(
   wordList: String[],
+  initialWpm: number,
+  finalWpm: number,
+  duration: number,
   setCurrentWord: React.Dispatch<React.SetStateAction<String | null>>
 ) {
+  // the initial duration where a single word is displayed is (60/n)*1000 (ms)
   for (const w of wordList) {
     setCurrentWord(w);
-    await sleep(100);
+    await sleep(60000 / initialWpm);
   }
 
   // when all words have been displayed, set the current word back to null to exit play mode
@@ -33,8 +37,8 @@ export interface Props {
 
 export default function Content({ text, setText }: Props) {
   // store the initial wpm, final wpm and also the duration
-  const [initialwpm, setInitialWpm] = useState<number>(200);
-  const [finalwpm, setFinalWpm] = useState<number>(200);
+  const [initialWpm, setInitialWpm] = useState<number>(200);
+  const [finalWpm, setFinalWpm] = useState<number>(200);
   const [duration, setDuration] = useState<number>(10);
 
   // store the current word to be displayed, or none if there aren't any
@@ -101,7 +105,7 @@ export default function Content({ text, setText }: Props) {
             variant="outlined"
             type="number"
             multiline={false}
-            value={initialwpm}
+            value={initialWpm}
             onChange={(n) => setInitialWpm(Number(n.target.value))}
           />
 
@@ -111,7 +115,7 @@ export default function Content({ text, setText }: Props) {
             variant="outlined"
             type="number"
             multiline={false}
-            value={finalwpm}
+            value={finalWpm}
             onChange={(n) => setFinalWpm(Number(n.target.value))}
           />
 
@@ -138,7 +142,13 @@ export default function Content({ text, setText }: Props) {
               const wordList = split(text);
 
               // call the play function to display the words
-              await play(wordList, setCurrentWord);
+              await play(
+                wordList,
+                initialWpm,
+                finalWpm,
+                duration,
+                setCurrentWord
+              );
             }}
           />
         )}
