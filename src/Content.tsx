@@ -6,6 +6,19 @@ import CustomButton from "./CustomButton";
 import PlayCircleFilledWhiteIcon from "@mui/icons-material/PlayCircleFilledWhite";
 import StopCircleIcon from "@mui/icons-material/StopCircle";
 
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function play(
+  wordList: String[],
+  setCurrentWord: React.Dispatch<React.SetStateAction<String | null>>
+) {
+  setCurrentWord("First");
+  await sleep(2000);
+  setCurrentWord("Second");
+}
+
 export interface Props {
   text: String;
   setText: React.Dispatch<SetStateAction<String>>;
@@ -113,8 +126,8 @@ export default function Content({ text, setText }: Props) {
             color="primary"
             startIcon={<PlayCircleFilledWhiteIcon />}
             variant="contained"
-            onClick={() => {
-              setCurrentWord("temp");
+            onClick={async () => {
+              await play([], setCurrentWord);
             }}
           />
         )}
