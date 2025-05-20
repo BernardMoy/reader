@@ -19,8 +19,11 @@ async function play(
 ) {
   for (const w of wordList) {
     setCurrentWord(w);
-    await sleep(800);
+    await sleep(100);
   }
+
+  // when all words have been displayed, set the current word back to null to exit play mode
+  setCurrentWord(null);
 }
 
 export interface Props {
