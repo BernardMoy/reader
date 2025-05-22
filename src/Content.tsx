@@ -5,7 +5,7 @@ import { useState, type SetStateAction } from "react";
 import CustomButton from "./CustomButton";
 import PlayCircleFilledWhiteIcon from "@mui/icons-material/PlayCircleFilledWhite";
 import StopCircleIcon from "@mui/icons-material/StopCircle";
-import split from "./Split";
+import split from "./split";
 
 // function to delay execution in ms
 function sleep(ms: number): Promise<void> {
