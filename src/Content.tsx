@@ -1,7 +1,7 @@
 import { Box, TextField, Typography } from "@mui/material";
 import { CONTENT_MARGIN, MIN_TEXTFIELD_HEIGHT, TITLE_MARGIN } from "./Values";
 import type React from "react";
-import { useState, type SetStateAction } from "react";
+import { useRef, useState, type SetStateAction } from "react";
 import CustomButton from "./CustomButton";
 import PlayCircleFilledWhiteIcon from "@mui/icons-material/PlayCircleFilledWhite";
 import StopCircleIcon from "@mui/icons-material/StopCircle";
@@ -18,10 +18,14 @@ async function play(
   initialWpm: number,
   finalWpm: number,
   duration: number,
-  setCurrentWord: React.Dispatch<React.SetStateAction<String | null>>
+  currentWord: String | null,
+  setCurrentWord: React.Dispatch<React.SetStateAction<String | null>>,
+  playing: React.RefObject<Boolean>
 ) {
   // the initial duration where a single word is displayed is (60/n)*1000 (ms)
-  for (const w of wordList) {
+  for (let i = 0; i < wordList.length && playing.current; i++) {
+    // display the next word
+    const w = wordList[i];
     setCurrentWord(w);
     await sleep(60000 / initialWpm);
   }
@@ -44,6 +48,13 @@ export default function Content({ text, setText }: Props) {
   // store the current word to be displayed, or none if there aren't any
   // if current word is none, then it is not in a displaying state
   const [currentWord, setCurrentWord] = useState<String | null>(null);
+
+  // state to check if it is playing
+  const playing = useRef(true);
+
+  const stop = () => {
+    playing.current = false;
+  };
 
   return (
     <Box
@@ -147,7 +158,9 @@ export default function Content({ text, setText }: Props) {
                 initialWpm,
                 finalWpm,
                 duration,
-                setCurrentWord
+                currentWord,
+                setCurrentWord,
+                playing
               );
             }}
           />
@@ -162,6 +175,7 @@ export default function Content({ text, setText }: Props) {
             variant="contained"
             onClick={() => {
               setCurrentWord(null);
+              stop();
             }}
           />
         )}
