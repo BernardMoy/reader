@@ -20,9 +20,10 @@ async function play(
   duration: number,
   currentWord: String | null,
   setCurrentWord: React.Dispatch<React.SetStateAction<String | null>>,
-  playing: React.RefObject<Boolean>
+  playing: React.RefObject<Boolean> // UseRef hook -> React useStates are not updated immediately
 ) {
   // the initial duration where a single word is displayed is (60/n)*1000 (ms)
+  // stop when playing.current is set to false
   for (let i = 0; i < wordList.length && playing.current; i++) {
     // display the next word
     const w = wordList[i];
@@ -32,6 +33,9 @@ async function play(
 
   // when all words have been displayed, set the current word back to null to exit play mode
   setCurrentWord(null);
+
+  // exit play state
+  playing.current = false;
 }
 
 export interface Props {
@@ -50,11 +54,7 @@ export default function Content({ text, setText }: Props) {
   const [currentWord, setCurrentWord] = useState<String | null>(null);
 
   // state to check if it is playing
-  const playing = useRef(true);
-
-  const stop = () => {
-    playing.current = false;
-  };
+  const playing = useRef(false);
 
   return (
     <Box
@@ -152,6 +152,9 @@ export default function Content({ text, setText }: Props) {
               // split the text into word list using the split function
               const wordList = split(text);
 
+              // set playing to true
+              playing.current = true;
+
               // call the play function to display the words
               await play(
                 wordList,
@@ -175,7 +178,7 @@ export default function Content({ text, setText }: Props) {
             variant="contained"
             onClick={() => {
               setCurrentWord(null);
-              stop();
+              playing.current = false;
             }}
           />
         )}
