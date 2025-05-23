@@ -18,20 +18,27 @@ async function play(
   initialWpm: number,
   finalWpm: number,
   duration: number,
-  currentWord: String | null,
+  setCurrentWordNumber: React.Dispatch<React.SetStateAction<number>>,
+  setTotalWordNumber: React.Dispatch<React.SetStateAction<number>>,
   setCurrentWord: React.Dispatch<React.SetStateAction<String | null>>,
   playing: React.RefObject<Boolean> // UseRef hook -> React useStates are not updated immediately
 ) {
+  // set the total word number to be displayed
+  setTotalWordNumber(wordList.length);
+
   // the initial duration where a single word is displayed is (60/n)*1000 (ms)
   // stop when playing.current is set to false
   for (let i = 0; i < wordList.length && playing.current; i++) {
     // display the next word
     const w = wordList[i];
+    setCurrentWordNumber(i);
     setCurrentWord(w);
     await sleep(60000 / initialWpm);
   }
 
   // when all words have been displayed, set the current word back to null to exit play mode
+  setTotalWordNumber(0);
+  setCurrentWordNumber(0);
   setCurrentWord(null);
 
   // exit play state
@@ -49,8 +56,10 @@ export default function Content({ text, setText }: Props) {
   const [finalWpm, setFinalWpm] = useState<number>(200);
   const [duration, setDuration] = useState<number>(10);
 
-  // store the current word to be displayed, or none if there aren't any
+  // store the current word number to be displayed, or none if there aren't any
   // if current word is none, then it is not in a displaying state
+  const [currentWordNumber, setCurrentWordNumber] = useState<number>(0);
+  const [totalWordNumber, setTotalWordNumber] = useState<number>(0);
   const [currentWord, setCurrentWord] = useState<String | null>(null);
 
   // state to check if it is playing
@@ -66,7 +75,7 @@ export default function Content({ text, setText }: Props) {
       {/* The text showing how many words are left */}
       <Typography variant="body1" fontWeight="bold" align="left">
         {/* Make this fontweight bold */}
-        Word: 23 / 50
+        Word: {currentWordNumber} / {totalWordNumber}
       </Typography>
 
       {/* The main textfield for entering the paragraph */}
@@ -167,7 +176,8 @@ export default function Content({ text, setText }: Props) {
                 initialWpm,
                 finalWpm,
                 duration,
-                currentWord,
+                setCurrentWordNumber,
+                setTotalWordNumber,
                 setCurrentWord,
                 playing
               );
