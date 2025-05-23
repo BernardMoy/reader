@@ -1,5 +1,6 @@
 import { createTheme } from "@mui/material/styles";
 import "@fontsource/open-sans";
+import "@fontsource/open-sans/700.css";
 
 const theme = createTheme({
   palette: {
@@ -12,6 +13,8 @@ const theme = createTheme({
   },
   typography: {
     fontFamily: "'Open Sans', sans-serif",
+    fontWeightRegular: 400,
+    fontWeightBold: 700,
   },
 });
 
