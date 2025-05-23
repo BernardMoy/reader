@@ -73,10 +73,11 @@ export default function Content({ text, setText }: Props) {
       sx={{ width: "100%" }}
     >
       {/* The text showing how many words are left */}
-      <Typography variant="body1" fontWeight="bold" align="left">
-        {/* Make this fontweight bold */}
-        Word: {currentWordNumber} / {totalWordNumber}
-      </Typography>
+      {playing.current && (
+        <Typography variant="body1" fontWeight="bold" align="left">
+          Word: {currentWordNumber} / {totalWordNumber}
+        </Typography>
+      )}
 
       {/* The main textfield for entering the paragraph */}
       {currentWord === null && (
