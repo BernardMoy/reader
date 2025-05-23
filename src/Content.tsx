@@ -63,6 +63,15 @@ export default function Content({ text, setText }: Props) {
       gap={TITLE_MARGIN}
       sx={{ width: "100%" }}
     >
+      {/* The text showing how many words are left */}
+      <Typography
+        variant="body1"
+        fontStyle="bold"
+        align="center"
+        minHeight={MIN_TEXTFIELD_HEIGHT}
+      >
+        Word: 23 / 50
+      </Typography>
       {/* The main textfield for entering the paragraph */}
       {currentWord === null && (
         <TextField
