@@ -104,9 +104,12 @@ export default function Content({ text, setText }: Props) {
       {/* The box for displaying large text */}
       {currentWord !== null && (
         <Typography
-          variant="h1"
+          variant="h2"
           align="center"
           minHeight={MIN_TEXTFIELD_HEIGHT}
+          sx={{
+            overflowWrap: "break-word",
+          }}
         >
           {currentWord}
         </Typography>
