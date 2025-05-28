@@ -72,12 +72,31 @@ export default function Content({ text, setText }: Props) {
       gap={TITLE_MARGIN}
       sx={{ width: "100%" }}
     >
-      {/* The text showing how many words are left */}
-      {playing.current && (
-        <Typography variant="body1" fontWeight="bold" align="left">
-          Word: {currentWordNumber} / {totalWordNumber}
-        </Typography>
-      )}
+      <Box
+        display="flex"
+        flexDirection="row"
+        gap={TITLE_MARGIN}
+        sx={{ width: "100%" }}
+      >
+        {/* The text showing how many words are left */}
+        {playing.current && (
+          <Typography
+            variant="body1"
+            fontWeight="bold"
+            align="left"
+            flexGrow="1" // fill remaining space
+          >
+            Word: {currentWordNumber} / {totalWordNumber}
+          </Typography>
+        )}
+
+        {/* The text showing the current wpm */}
+        {playing.current && (
+          <Typography variant="body1" fontWeight="bold" align="right">
+            Current wpm: {initialWpm}
+          </Typography>
+        )}
+      </Box>
 
       {/* The main textfield for entering the paragraph */}
       {currentWord === null && (
