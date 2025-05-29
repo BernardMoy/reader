@@ -94,6 +94,8 @@ export default function Content({ text, setText }: Props) {
     // recursive play function that plays faster gradually
     function play() {
       if (wordNumber > wordList.length) {
+        wordNumber = 1; // IDK WHY But you have to reset the parameters here.
+        currentWpm = initialWpm;
         exit();
         setPlaying(false);
       }
