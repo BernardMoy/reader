@@ -7,34 +7,34 @@ import PlayCircleFilledWhiteIcon from "@mui/icons-material/PlayCircleFilledWhite
 import StopCircleIcon from "@mui/icons-material/StopCircle";
 import split from "./split";
 
-// function to delay execution in ms
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 // async function to sequentially set the current word with delays to achieve displaying words one by one
 async function play(
   wordList: String[],
   initialWpm: number,
   finalWpm: number,
   duration: number,
+  currentWordNumber: number,
   setCurrentWordNumber: React.Dispatch<React.SetStateAction<number>>,
   setTotalWordNumber: React.Dispatch<React.SetStateAction<number>>,
   setCurrentWord: React.Dispatch<React.SetStateAction<String | null>>,
   playing: React.RefObject<Boolean> // UseRef hook -> React useStates are not updated immediately
 ) {
-  // set the total word number to be displayed
+  //the index of the word being displayed
+  let index = 0;
+  setCurrentWordNumber(index);
+
+  // set the total word number
   setTotalWordNumber(wordList.length);
 
   // the initial duration where a single word is displayed is (60/n)*1000 (ms)
   // stop when playing.current is set to false
-  for (let i = 0; i < wordList.length && playing.current; i++) {
+  const interval = 60000 / initialWpm;
+
+  setInterval(() => {
     // display the next word
-    const w = wordList[i];
-    setCurrentWordNumber(i);
-    setCurrentWord(w);
-    await sleep(60000 / initialWpm);
-  }
+    setCurrentWordNumber(currentWordNumber + 1);
+    setCurrentWord(wordList[currentWordNumber]);
+  }, interval);
 
   // when all words have been displayed, set the current word back to null to exit play mode
   setTotalWordNumber(0);
@@ -199,6 +199,7 @@ export default function Content({ text, setText }: Props) {
                 initialWpm,
                 finalWpm,
                 duration,
+                currentWordNumber,
                 setCurrentWordNumber,
                 setTotalWordNumber,
                 setCurrentWord,
