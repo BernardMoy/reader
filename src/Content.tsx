@@ -76,6 +76,9 @@ export default function Content({ text, setText }: Props) {
     // set current word to be the first word initially
     setCurrentWord(wordList[0]);
 
+    // set the current word number to be 1
+    setCurrentWordNumber(1);
+
     // set the total word number
     setTotalWordNumber(wordList.length);
 
@@ -84,7 +87,7 @@ export default function Content({ text, setText }: Props) {
       setCurrentWordNumber((prev) => {
         const next = prev + 1;
 
-        setCurrentWord(wordList[next]); // updates the word immediately - this cannot be placed outside: Updates are asynchronous
+        setCurrentWord(wordList[next - 1]); // updates the word immediately - this cannot be placed outside: Updates are asynchronous
         return next;
       });
     }, 1000);
