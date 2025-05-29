@@ -89,6 +89,9 @@ export default function Content({ text, setText }: Props) {
     // set the total word number
     setTotalWordNumber(wordList.length);
 
+    // calculate the current interval
+    let interval = 60000 / initialWpm;
+
     var id = setInterval(() => {
       // update the word number
       setCurrentWordNumber((prev) => {
@@ -103,7 +106,7 @@ export default function Content({ text, setText }: Props) {
         setCurrentWord(wordList[next - 1]); // updates the word immediately - this cannot be placed outside: Updates are asynchronous
         return next;
       });
-    }, 1000);
+    }, interval);
 
     return () => exit();
   }, [playing]); //<-- Cannot place the current word here, otherwise it re-renders the play state when the word updates
