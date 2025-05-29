@@ -1,7 +1,7 @@
 import { Box, TextField, Typography } from "@mui/material";
 import { CONTENT_MARGIN, MIN_TEXTFIELD_HEIGHT, TITLE_MARGIN } from "./Values";
 import type React from "react";
-import { useRef, useState, type SetStateAction } from "react";
+import { useEffect, useRef, useState, type SetStateAction } from "react";
 import CustomButton from "./CustomButton";
 import PlayCircleFilledWhiteIcon from "@mui/icons-material/PlayCircleFilledWhite";
 import StopCircleIcon from "@mui/icons-material/StopCircle";
@@ -63,7 +63,27 @@ export default function Content({ text, setText }: Props) {
   const [currentWord, setCurrentWord] = useState<String | null>(null);
 
   // state to check if it is playing
-  const playing = useRef(false);
+  const [playing, setPlaying] = useState(false);
+
+  useEffect(() => {
+    if (!playing) {
+      return;
+    }
+    // set current word to be null initially
+    setCurrentWord(null);
+
+    // split the paragraph
+    const wordList = split(text);
+
+    var id = setInterval(() => {
+      // update the word number
+      setCurrentWordNumber((old) => old + 1);
+      setCurrentWord(wordList[currentWordNumber]);
+    }, 1000);
+
+    // clear after playing
+    return () => clearInterval(id);
+  }, [playing, currentWordNumber]);
 
   return (
     <Box
@@ -79,7 +99,7 @@ export default function Content({ text, setText }: Props) {
         sx={{ width: "100%" }}
       >
         {/* The text showing how many words are left */}
-        {playing.current && (
+        {playing && (
           <Typography
             variant="body1"
             fontWeight="bold"
@@ -91,7 +111,7 @@ export default function Content({ text, setText }: Props) {
         )}
 
         {/* The text showing the current wpm */}
-        {playing.current && (
+        {playing && (
           <Typography variant="body1" fontWeight="bold" align="right">
             Current wpm: {initialWpm}
           </Typography>
@@ -121,7 +141,7 @@ export default function Content({ text, setText }: Props) {
       )}
 
       {/* The box for displaying large text */}
-      {currentWord !== null && (
+      {playing && (
         <Typography
           variant="h2"
           align="center"
@@ -187,24 +207,8 @@ export default function Content({ text, setText }: Props) {
             startIcon={<PlayCircleFilledWhiteIcon />}
             variant="contained"
             onClick={async () => {
-              // split the text into word list using the split function
-              const wordList = split(text);
-
               // set playing to true
-              playing.current = true;
-
-              // call the play function to display the words
-              await play(
-                wordList,
-                initialWpm,
-                finalWpm,
-                duration,
-                currentWordNumber,
-                setCurrentWordNumber,
-                setTotalWordNumber,
-                setCurrentWord,
-                playing
-              );
+              setPlaying(true);
             }}
           />
         )}
@@ -217,8 +221,7 @@ export default function Content({ text, setText }: Props) {
             startIcon={<StopCircleIcon />}
             variant="contained"
             onClick={() => {
-              setCurrentWord(null);
-              playing.current = false;
+              setPlaying(false);
             }}
           />
         )}
