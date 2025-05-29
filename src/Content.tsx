@@ -69,11 +69,12 @@ export default function Content({ text, setText }: Props) {
     if (!playing) {
       return;
     }
-    // set current word to be null initially
-    setCurrentWord(null);
 
     // split the paragraph
     const wordList = split(text);
+
+    // set current word to be the first word initially
+    setCurrentWord(wordList[0]);
 
     // set the total word number
     setTotalWordNumber(wordList.length);
@@ -88,8 +89,12 @@ export default function Content({ text, setText }: Props) {
       });
     }, 1000);
 
-    // clear after playing
-    return () => clearInterval(id);
+    return () => {
+      setCurrentWordNumber(0); // set current and total word number to 0
+      setTotalWordNumber(0);
+      setCurrentWord(null); // set current word to null for better referencing later
+      clearInterval(id); // clear interval after playing
+    };
   }, [playing]); //<-- Cannot place the current word here, otherwise it re-renders the play state when the word updates
 
   return (
@@ -207,7 +212,7 @@ export default function Content({ text, setText }: Props) {
         </Box>
 
         {/* Start button with icon */}
-        {playing && (
+        {!playing && (
           <CustomButton
             text="Start"
             color="primary"
@@ -221,7 +226,7 @@ export default function Content({ text, setText }: Props) {
         )}
 
         {/* Stop button with icon */}
-        {!playing && (
+        {playing && (
           <CustomButton
             text="Stop"
             color="secondary"
