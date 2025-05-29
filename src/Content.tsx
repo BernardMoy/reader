@@ -75,15 +75,22 @@ export default function Content({ text, setText }: Props) {
     // split the paragraph
     const wordList = split(text);
 
+    // set the total word number
+    setTotalWordNumber(wordList.length);
+
     var id = setInterval(() => {
       // update the word number
-      setCurrentWordNumber((old) => old + 1);
-      setCurrentWord(wordList[currentWordNumber]);
+      setCurrentWordNumber((prev) => {
+        const next = prev + 1;
+
+        setCurrentWord(wordList[next]); // updates the word immediately - this cannot be placed outside: Updates are asynchronous
+        return next;
+      });
     }, 1000);
 
     // clear after playing
     return () => clearInterval(id);
-  }, [playing, currentWordNumber]);
+  }, [playing]); //<-- Cannot place the current word here, otherwise it re-renders the play state when the word updates
 
   return (
     <Box
@@ -119,7 +126,7 @@ export default function Content({ text, setText }: Props) {
       </Box>
 
       {/* The main textfield for entering the paragraph */}
-      {currentWord === null && (
+      {!playing && (
         <TextField
           id="main-textfield"
           label="Text"
@@ -200,7 +207,7 @@ export default function Content({ text, setText }: Props) {
         </Box>
 
         {/* Start button with icon */}
-        {currentWord === null && (
+        {playing && (
           <CustomButton
             text="Start"
             color="primary"
@@ -214,7 +221,7 @@ export default function Content({ text, setText }: Props) {
         )}
 
         {/* Stop button with icon */}
-        {currentWord !== null && (
+        {!playing && (
           <CustomButton
             text="Stop"
             color="secondary"
