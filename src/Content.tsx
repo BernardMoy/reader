@@ -1,7 +1,7 @@
 import { Box, TextField, Typography } from "@mui/material";
 import { CONTENT_MARGIN, MIN_TEXTFIELD_HEIGHT, TITLE_MARGIN } from "./Values";
 import type React from "react";
-import { useRef, useState, type SetStateAction } from "react";
+import { useEffect, useRef, useState, type SetStateAction } from "react";
 import CustomButton from "./CustomButton";
 import PlayCircleFilledWhiteIcon from "@mui/icons-material/PlayCircleFilledWhite";
 import StopCircleIcon from "@mui/icons-material/StopCircle";
@@ -63,7 +63,53 @@ export default function Content({ text, setText }: Props) {
   const [currentWord, setCurrentWord] = useState<String | null>(null);
 
   // state to check if it is playing
-  const playing = useRef(false);
+  const [playing, setPlaying] = useState(false);
+
+  useEffect(() => {
+    function exit() {
+      setCurrentWordNumber(0); // set current and total word number to 0
+      setTotalWordNumber(0);
+      setCurrentWord(null); // set current word to null for better referencing later
+      clearInterval(id); // clear interval after playing
+    }
+
+    if (!playing) {
+      return;
+    }
+
+    // split the paragraph
+    const wordList = split(text);
+
+    // set current word to be the first word initially
+    setCurrentWord(wordList[0]);
+
+    // set the current word number to be 1
+    setCurrentWordNumber(1);
+
+    // set the total word number
+    setTotalWordNumber(wordList.length);
+
+    // calculate the current interval
+    let interval = 60000 / initialWpm;
+
+    var id = setInterval(() => {
+      // update the word number
+      setCurrentWordNumber((prev) => {
+        const next = prev + 1;
+
+        // if exceeds the word list length, exit
+        if (next > wordList.length) {
+          exit();
+          setPlaying(false);
+        }
+
+        setCurrentWord(wordList[next - 1]); // updates the word immediately - this cannot be placed outside: Updates are asynchronous
+        return next;
+      });
+    }, interval);
+
+    return () => exit();
+  }, [playing]); //<-- Cannot place the current word here, otherwise it re-renders the play state when the word updates
 
   return (
     <Box
@@ -79,7 +125,7 @@ export default function Content({ text, setText }: Props) {
         sx={{ width: "100%" }}
       >
         {/* The text showing how many words are left */}
-        {playing.current && (
+        {playing && (
           <Typography
             variant="body1"
             fontWeight="bold"
@@ -91,7 +137,7 @@ export default function Content({ text, setText }: Props) {
         )}
 
         {/* The text showing the current wpm */}
-        {playing.current && (
+        {playing && (
           <Typography variant="body1" fontWeight="bold" align="right">
             Current wpm: {initialWpm}
           </Typography>
@@ -99,7 +145,7 @@ export default function Content({ text, setText }: Props) {
       </Box>
 
       {/* The main textfield for entering the paragraph */}
-      {currentWord === null && (
+      {!playing && (
         <TextField
           id="main-textfield"
           label="Text"
@@ -121,7 +167,7 @@ export default function Content({ text, setText }: Props) {
       )}
 
       {/* The box for displaying large text */}
-      {currentWord !== null && (
+      {playing && (
         <Typography
           variant="h2"
           align="center"
@@ -180,45 +226,28 @@ export default function Content({ text, setText }: Props) {
         </Box>
 
         {/* Start button with icon */}
-        {currentWord === null && (
+        {!playing && (
           <CustomButton
             text="Start"
             color="primary"
             startIcon={<PlayCircleFilledWhiteIcon />}
             variant="contained"
             onClick={async () => {
-              // split the text into word list using the split function
-              const wordList = split(text);
-
               // set playing to true
-              playing.current = true;
-
-              // call the play function to display the words
-              await play(
-                wordList,
-                initialWpm,
-                finalWpm,
-                duration,
-                currentWordNumber,
-                setCurrentWordNumber,
-                setTotalWordNumber,
-                setCurrentWord,
-                playing
-              );
+              setPlaying(true);
             }}
           />
         )}
 
         {/* Stop button with icon */}
-        {currentWord !== null && (
+        {playing && (
           <CustomButton
             text="Stop"
             color="secondary"
             startIcon={<StopCircleIcon />}
             variant="contained"
             onClick={() => {
-              setCurrentWord(null);
-              playing.current = false;
+              setPlaying(false);
             }}
           />
         )}
