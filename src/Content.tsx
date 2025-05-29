@@ -66,6 +66,13 @@ export default function Content({ text, setText }: Props) {
   const [playing, setPlaying] = useState(false);
 
   useEffect(() => {
+    function exit() {
+      setCurrentWordNumber(0); // set current and total word number to 0
+      setTotalWordNumber(0);
+      setCurrentWord(null); // set current word to null for better referencing later
+      clearInterval(id); // clear interval after playing
+    }
+
     if (!playing) {
       return;
     }
@@ -87,17 +94,18 @@ export default function Content({ text, setText }: Props) {
       setCurrentWordNumber((prev) => {
         const next = prev + 1;
 
+        // if exceeds the word list length, exit
+        if (next > wordList.length) {
+          exit();
+          setPlaying(false);
+        }
+
         setCurrentWord(wordList[next - 1]); // updates the word immediately - this cannot be placed outside: Updates are asynchronous
         return next;
       });
     }, 1000);
 
-    return () => {
-      setCurrentWordNumber(0); // set current and total word number to 0
-      setTotalWordNumber(0);
-      setCurrentWord(null); // set current word to null for better referencing later
-      clearInterval(id); // clear interval after playing
-    };
+    return () => exit();
   }, [playing]); //<-- Cannot place the current word here, otherwise it re-renders the play state when the word updates
 
   return (
