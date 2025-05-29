@@ -70,7 +70,6 @@ export default function Content({ text, setText }: Props) {
       setCurrentWordNumber(0); // set current and total word number to 0
       setTotalWordNumber(0);
       setCurrentWord(null); // set current word to null for better referencing later
-      clearInterval(id); // clear interval after playing
     }
 
     if (!playing) {
@@ -80,33 +79,38 @@ export default function Content({ text, setText }: Props) {
     // split the paragraph
     const wordList = split(text);
 
+    let currentWpm = initialWpm;
+    let wordNumber = 1;
+
     // set current word to be the first word initially
-    setCurrentWord(wordList[0]);
+    setCurrentWord(wordList[wordNumber - 1]);
 
     // set the current word number to be 1
-    setCurrentWordNumber(1);
+    setCurrentWordNumber(wordNumber);
 
     // set the total word number
     setTotalWordNumber(wordList.length);
 
-    // calculate the current interval
-    let interval = 60000 / initialWpm;
+    // recursive play function that plays faster gradually
+    function play() {
+      if (wordNumber > wordList.length) {
+        exit();
+        setPlaying(false);
+      }
 
-    var id = setInterval(() => {
-      // update the word number
-      setCurrentWordNumber((prev) => {
-        const next = prev + 1;
+      setCurrentWord(wordList[wordNumber - 1]);
 
-        // if exceeds the word list length, exit
-        if (next > wordList.length) {
-          exit();
-          setPlaying(false);
-        }
+      // modify word number
+      wordNumber += 1;
 
-        setCurrentWord(wordList[next - 1]); // updates the word immediately - this cannot be placed outside: Updates are asynchronous
-        return next;
-      });
-    }, interval);
+      // new wpm
+      currentWpm = currentWpm * 1.1;
+      const interval = 60000 / currentWpm;
+
+      setTimeout(play, interval);
+    }
+
+    play();
 
     return () => exit();
   }, [playing]); //<-- Cannot place the current word here, otherwise it re-renders the play state when the word updates
