@@ -72,13 +72,19 @@ export default function Content({ text, setText }: Props) {
       wordNumberRef.current += 1;
       setCurrentWordNumber(wordNumberRef.current);
 
-      // calculate the new wpm
+      // calculate the new wpm by solving the equation of slope (final-initial)/duration = (x-initial)/time
       const interval = 60000 / wpmRef.current;
       timeElapsed.current += interval;
 
-      wpmRef.current =
-        initialWpm +
-        ((finalWpm - initialWpm) / (duration * 1000)) * timeElapsed.current;
+      // cap the wpm to final wpm, and calculate only when it is less than it
+      if (wpmRef.current != finalWpm) {
+        wpmRef.current = Math.min(
+          finalWpm,
+          initialWpm +
+            ((finalWpm - initialWpm) / (duration * 1000)) * timeElapsed.current
+        );
+      }
+
       setCurrentWpm(wpmRef.current);
 
       // recursively call playing if the word number does not exceed length
@@ -86,7 +92,7 @@ export default function Content({ text, setText }: Props) {
         exit();
         setPlaying(false);
       } else {
-        setTimeout(play, interval);
+        setTimeout(play, interval); // recursive call here, interval being the delay
       }
     }
 
