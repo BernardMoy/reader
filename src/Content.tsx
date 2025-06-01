@@ -7,44 +7,6 @@ import PlayCircleFilledWhiteIcon from "@mui/icons-material/PlayCircleFilledWhite
 import StopCircleIcon from "@mui/icons-material/StopCircle";
 import split from "./split";
 
-// async function to sequentially set the current word with delays to achieve displaying words one by one
-async function play(
-  wordList: String[],
-  initialWpm: number,
-  finalWpm: number,
-  duration: number,
-  currentWordNumber: number,
-  setCurrentWordNumber: React.Dispatch<React.SetStateAction<number>>,
-  setTotalWordNumber: React.Dispatch<React.SetStateAction<number>>,
-  setCurrentWord: React.Dispatch<React.SetStateAction<String | null>>,
-  playing: React.RefObject<Boolean> // UseRef hook -> React useStates are not updated immediately
-) {
-  //the index of the word being displayed
-  let index = 0;
-  setCurrentWordNumber(index);
-
-  // set the total word number
-  setTotalWordNumber(wordList.length);
-
-  // the initial duration where a single word is displayed is (60/n)*1000 (ms)
-  // stop when playing.current is set to false
-  const interval = 60000 / initialWpm;
-
-  setInterval(() => {
-    // display the next word
-    setCurrentWordNumber(currentWordNumber + 1);
-    setCurrentWord(wordList[currentWordNumber]);
-  }, interval);
-
-  // when all words have been displayed, set the current word back to null to exit play mode
-  setTotalWordNumber(0);
-  setCurrentWordNumber(0);
-  setCurrentWord(null);
-
-  // exit play state
-  playing.current = false;
-}
-
 export interface Props {
   text: String;
   setText: React.Dispatch<SetStateAction<String>>;
@@ -55,6 +17,7 @@ export default function Content({ text, setText }: Props) {
   const [initialWpm, setInitialWpm] = useState<number>(200);
   const [finalWpm, setFinalWpm] = useState<number>(200);
   const [duration, setDuration] = useState<number>(10);
+  const [currentWpm, setCurrentWpm] = useState<number>(200);
 
   // store the current word number to be displayed, or none if there aren't any
   // if current word is none, then it is not in a displaying state
@@ -65,11 +28,19 @@ export default function Content({ text, setText }: Props) {
   // state to check if it is playing
   const [playing, setPlaying] = useState(false);
 
+  // use ref to avoid closure problems remembering the previous runs
+  const wordNumberRef = useRef<number>(0);
+  const wpmRef = useRef<number>(initialWpm);
+  const timeElapsed = useRef<number>(0);
+
+  // use effect block to display word animations.
+  // Trigger when the dependency (playing) changes -- set to TRUE or set to FALSE
   useEffect(() => {
+    // function called when the loop exits (Finished playing or when stopped)
     function exit() {
       setCurrentWordNumber(0); // set current and total word number to 0
       setTotalWordNumber(0);
-      setCurrentWord(null); // set current word to null for better referencing later
+      setCurrentWord(null); // reset the current word
     }
 
     if (!playing) {
@@ -79,37 +50,50 @@ export default function Content({ text, setText }: Props) {
     // split the paragraph
     const wordList = split(text);
 
-    let currentWpm = initialWpm;
-    let wordNumber = 1;
+    // set current word to be the first word initially (for display purposes)
+    setCurrentWord(wordList[0]);
 
-    // set current word to be the first word initially
-    setCurrentWord(wordList[wordNumber - 1]);
-
-    // set the current word number to be 1
-    setCurrentWordNumber(wordNumber);
+    // set the current word number to be 0 and the current wpm to be the initial wpm
+    wordNumberRef.current = 0;
+    setCurrentWordNumber(0);
+    wpmRef.current = initialWpm;
+    setCurrentWpm(wpmRef.current);
+    timeElapsed.current = 0;
 
     // set the total word number
     setTotalWordNumber(wordList.length);
 
     // recursive play function that plays faster gradually
     function play() {
-      if (wordNumber > wordList.length) {
-        wordNumber = 1; // IDK WHY But you have to reset the parameters here.
-        currentWpm = initialWpm;
-        exit();
-        setPlaying(false);
-      }
-
-      setCurrentWord(wordList[wordNumber - 1]);
+      // display the current word
+      setCurrentWord(wordList[wordNumberRef.current]);
 
       // modify word number
-      wordNumber += 1;
+      wordNumberRef.current += 1;
+      setCurrentWordNumber(wordNumberRef.current);
 
-      // new wpm
-      currentWpm = currentWpm * 1.1;
-      const interval = 60000 / currentWpm;
+      // calculate the new wpm by solving the equation of slope (final-initial)/duration = (x-initial)/time
+      const interval = 60000 / wpmRef.current;
+      timeElapsed.current += interval;
 
-      setTimeout(play, interval);
+      // cap the wpm to final wpm, and calculate only when it is less than it
+      if (wpmRef.current != finalWpm) {
+        wpmRef.current = Math.min(
+          finalWpm,
+          initialWpm +
+            ((finalWpm - initialWpm) / (duration * 1000)) * timeElapsed.current
+        );
+      }
+
+      setCurrentWpm(wpmRef.current);
+
+      // recursively call playing if the word number does not exceed length
+      if (wordNumberRef.current > wordList.length) {
+        exit();
+        setPlaying(false);
+      } else {
+        setTimeout(play, interval); // recursive call here, interval being the delay
+      }
     }
 
     play();
@@ -145,7 +129,8 @@ export default function Content({ text, setText }: Props) {
         {/* The text showing the current wpm */}
         {playing && (
           <Typography variant="body1" fontWeight="bold" align="right">
-            Current wpm: {initialWpm}
+            Current wpm: {Math.round(currentWpm * 10) / 10}
+            {/* Round to 1 dp */}
           </Typography>
         )}
       </Box>
