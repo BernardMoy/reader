@@ -60,12 +60,6 @@ export default function Content({ text, setText }: Props) {
 
     // recursive play function that plays faster gradually
     function play() {
-      if (wordNumber > wordList.length) {
-        wpm = initialWpm;
-        exit();
-        setPlaying(false);
-      }
-
       // display the current word
       setCurrentWord(wordList[wordNumber]);
 
@@ -78,7 +72,13 @@ export default function Content({ text, setText }: Props) {
       setCurrentWpm(wpm);
       const interval = 60000 / wpm;
 
-      setTimeout(play, interval);
+      // recursively call playing if the word number does not exceed length
+      if (wordNumber > wordList.length) {
+        exit();
+        setPlaying(false);
+      } else {
+        setTimeout(play, interval);
+      }
     }
 
     play();
@@ -114,7 +114,7 @@ export default function Content({ text, setText }: Props) {
         {/* The text showing the current wpm */}
         {playing && (
           <Typography variant="body1" fontWeight="bold" align="right">
-            Current wpm: {Math.round(currentWpm * 10) / 10}{" "}
+            Current wpm: {Math.round(currentWpm * 10) / 10}
             {/* Round to 1 dp */}
           </Typography>
         )}
