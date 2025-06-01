@@ -7,44 +7,6 @@ import PlayCircleFilledWhiteIcon from "@mui/icons-material/PlayCircleFilledWhite
 import StopCircleIcon from "@mui/icons-material/StopCircle";
 import split from "./split";
 
-// async function to sequentially set the current word with delays to achieve displaying words one by one
-async function play(
-  wordList: String[],
-  initialWpm: number,
-  finalWpm: number,
-  duration: number,
-  currentWordNumber: number,
-  setCurrentWordNumber: React.Dispatch<React.SetStateAction<number>>,
-  setTotalWordNumber: React.Dispatch<React.SetStateAction<number>>,
-  setCurrentWord: React.Dispatch<React.SetStateAction<String | null>>,
-  playing: React.RefObject<Boolean> // UseRef hook -> React useStates are not updated immediately
-) {
-  //the index of the word being displayed
-  let index = 0;
-  setCurrentWordNumber(index);
-
-  // set the total word number
-  setTotalWordNumber(wordList.length);
-
-  // the initial duration where a single word is displayed is (60/n)*1000 (ms)
-  // stop when playing.current is set to false
-  const interval = 60000 / initialWpm;
-
-  setInterval(() => {
-    // display the next word
-    setCurrentWordNumber(currentWordNumber + 1);
-    setCurrentWord(wordList[currentWordNumber]);
-  }, interval);
-
-  // when all words have been displayed, set the current word back to null to exit play mode
-  setTotalWordNumber(0);
-  setCurrentWordNumber(0);
-  setCurrentWord(null);
-
-  // exit play state
-  playing.current = false;
-}
-
 export interface Props {
   text: String;
   setText: React.Dispatch<SetStateAction<String>>;
@@ -65,11 +27,12 @@ export default function Content({ text, setText }: Props) {
   // state to check if it is playing
   const [playing, setPlaying] = useState(false);
 
+  // use effect block to display word animations.
+  // Trigger when the dependency (playing) changes -- set to TRUE or set to FALSE
   useEffect(() => {
     function exit() {
       setCurrentWordNumber(0); // set current and total word number to 0
       setTotalWordNumber(0);
-      setCurrentWord(null); // set current word to null for better referencing later
     }
 
     if (!playing) {
