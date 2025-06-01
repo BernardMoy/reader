@@ -17,6 +17,7 @@ export default function Content({ text, setText }: Props) {
   const [initialWpm, setInitialWpm] = useState<number>(200);
   const [finalWpm, setFinalWpm] = useState<number>(200);
   const [duration, setDuration] = useState<number>(10);
+  const [currentWpm, setCurrentWpm] = useState<number>(200);
 
   // store the current word number to be displayed, or none if there aren't any
   // if current word is none, then it is not in a displaying state
@@ -30,9 +31,11 @@ export default function Content({ text, setText }: Props) {
   // use effect block to display word animations.
   // Trigger when the dependency (playing) changes -- set to TRUE or set to FALSE
   useEffect(() => {
+    // function called when the loop exits (Finished playing or when stopped)
     function exit() {
       setCurrentWordNumber(0); // set current and total word number to 0
       setTotalWordNumber(0);
+      setCurrentWord(null); // reset the current word
     }
 
     if (!playing) {
@@ -42,14 +45,15 @@ export default function Content({ text, setText }: Props) {
     // split the paragraph
     const wordList = split(text);
 
-    let currentWpm = initialWpm;
-    let wordNumber = 1;
+    // variable for the current wpm and current word number (from 0)
+    let wpm = initialWpm;
+    let wordNumber = 0;
 
-    // set current word to be the first word initially
-    setCurrentWord(wordList[wordNumber - 1]);
+    // set current word to be the first word initially (for display purposes)
+    setCurrentWord(wordList[0]);
 
-    // set the current word number to be 1
-    setCurrentWordNumber(wordNumber);
+    // set the current word number to be 0
+    setCurrentWordNumber(0);
 
     // set the total word number
     setTotalWordNumber(wordList.length);
@@ -57,20 +61,22 @@ export default function Content({ text, setText }: Props) {
     // recursive play function that plays faster gradually
     function play() {
       if (wordNumber > wordList.length) {
-        wordNumber = 1; // IDK WHY But you have to reset the parameters here.
-        currentWpm = initialWpm;
+        wpm = initialWpm;
         exit();
         setPlaying(false);
       }
 
-      setCurrentWord(wordList[wordNumber - 1]);
+      // display the current word
+      setCurrentWord(wordList[wordNumber]);
 
       // modify word number
       wordNumber += 1;
+      setCurrentWordNumber(wordNumber);
 
       // new wpm
-      currentWpm = currentWpm * 1.1;
-      const interval = 60000 / currentWpm;
+      wpm = wpm * 1.1;
+      setCurrentWpm(wpm);
+      const interval = 60000 / wpm;
 
       setTimeout(play, interval);
     }
@@ -108,7 +114,8 @@ export default function Content({ text, setText }: Props) {
         {/* The text showing the current wpm */}
         {playing && (
           <Typography variant="body1" fontWeight="bold" align="right">
-            Current wpm: {initialWpm}
+            Current wpm: {Math.round(currentWpm * 10) / 10}{" "}
+            {/* Round to 1 dp */}
           </Typography>
         )}
       </Box>
