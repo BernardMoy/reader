@@ -28,6 +28,10 @@ export default function Content({ text, setText }: Props) {
   // state to check if it is playing
   const [playing, setPlaying] = useState(false);
 
+  // use ref to avoid closure problems remembering the previous runs
+  const wordNumberRef = useRef<number>(0);
+  const wpmRef = useRef<number>(initialWpm);
+
   // use effect block to display word animations.
   // Trigger when the dependency (playing) changes -- set to TRUE or set to FALSE
   useEffect(() => {
@@ -45,15 +49,13 @@ export default function Content({ text, setText }: Props) {
     // split the paragraph
     const wordList = split(text);
 
-    // variable for the current wpm and current word number (from 0)
-    let wpm = initialWpm;
-    let wordNumber = 0;
-
     // set current word to be the first word initially (for display purposes)
     setCurrentWord(wordList[0]);
 
     // set the current word number to be 0
     setCurrentWordNumber(0);
+    wordNumberRef.current = 0;
+    wpmRef.current = initialWpm;
 
     // set the total word number
     setTotalWordNumber(wordList.length);
@@ -61,19 +63,17 @@ export default function Content({ text, setText }: Props) {
     // recursive play function that plays faster gradually
     function play() {
       // display the current word
-      setCurrentWord(wordList[wordNumber]);
+      setCurrentWord(wordList[wordNumberRef.current]);
 
       // modify word number
-      wordNumber += 1;
-      setCurrentWordNumber(wordNumber);
+      wordNumberRef.current += 1;
 
-      // new wpm
-      wpm = wpm * 1.1;
-      setCurrentWpm(wpm);
-      const interval = 60000 / wpm;
+      wpmRef.current = wpmRef.current * 1.1;
+      setCurrentWpm(wpmRef.current);
+      const interval = 60000 / wpmRef.current;
 
       // recursively call playing if the word number does not exceed length
-      if (wordNumber > wordList.length) {
+      if (wordNumberRef.current > wordList.length) {
         exit();
         setPlaying(false);
       } else {
