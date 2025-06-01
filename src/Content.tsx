@@ -31,6 +31,7 @@ export default function Content({ text, setText }: Props) {
   // use ref to avoid closure problems remembering the previous runs
   const wordNumberRef = useRef<number>(0);
   const wpmRef = useRef<number>(initialWpm);
+  const timeElapsed = useRef<number>(0);
 
   // use effect block to display word animations.
   // Trigger when the dependency (playing) changes -- set to TRUE or set to FALSE
@@ -52,10 +53,12 @@ export default function Content({ text, setText }: Props) {
     // set current word to be the first word initially (for display purposes)
     setCurrentWord(wordList[0]);
 
-    // set the current word number to be 0
-    setCurrentWordNumber(0);
+    // set the current word number to be 0 and the current wpm to be the initial wpm
     wordNumberRef.current = 0;
+    setCurrentWordNumber(0);
     wpmRef.current = initialWpm;
+    setCurrentWpm(wpmRef.current);
+    timeElapsed.current = 0;
 
     // set the total word number
     setTotalWordNumber(wordList.length);
@@ -67,10 +70,16 @@ export default function Content({ text, setText }: Props) {
 
       // modify word number
       wordNumberRef.current += 1;
+      setCurrentWordNumber(wordNumberRef.current);
 
-      wpmRef.current = wpmRef.current * 1.1;
-      setCurrentWpm(wpmRef.current);
+      // calculate the new wpm
       const interval = 60000 / wpmRef.current;
+      timeElapsed.current += interval;
+
+      wpmRef.current =
+        initialWpm +
+        ((finalWpm - initialWpm) / (duration * 1000)) * timeElapsed.current;
+      setCurrentWpm(wpmRef.current);
 
       // recursively call playing if the word number does not exceed length
       if (wordNumberRef.current > wordList.length) {
