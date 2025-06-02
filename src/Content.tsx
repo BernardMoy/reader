@@ -29,6 +29,7 @@ export default function Content({ text, setText }: Props) {
   const [playing, setPlaying] = useState(false);
 
   // use ref to avoid closure problems remembering the previous runs
+  // to be updated using setTimeout
   const wordNumberRef = useRef<number>(0);
   const wpmRef = useRef<number>(initialWpm);
   const timeElapsed = useRef<number>(0);
@@ -224,6 +225,11 @@ export default function Content({ text, setText }: Props) {
             startIcon={<PlayCircleFilledWhiteIcon />}
             variant="contained"
             onClick={async () => {
+              // first check if final wpm is >= initial wpm
+              if (initialWpm > finalWpm) {
+                alert("The final WPM must not be less than the initial WPM.");
+                return;
+              }
               // set playing to true
               setPlaying(true);
             }}
