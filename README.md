@@ -14,3 +14,9 @@ This react project can be deployed using npm (`npm install`):
 ```
 npm run dev
 ```
+
+Alternatively using docker compose: 
+```
+docker build -t reader .
+docker run -p 5173:5173 reader
+```
