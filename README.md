@@ -20,3 +20,6 @@ Alternatively using docker compose:
 docker build -t reader .
 docker run -p 5173:5173 reader
 ```
+
+
+![image](https://github.com/user-attachments/assets/5edde4a5-7301-4a00-a7c5-25a213c191dd)
