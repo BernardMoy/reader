@@ -92,6 +92,8 @@ export default function Content({ text, setText }: Props) {
       if (wordNumberRef.current > wordList.length) {
         exit();
         setPlaying(false);
+      } else if (wordNumberRef.current == wordList.length) {
+        setTimeout(play, interval + 1000); // display the last word for 1 second before leaving
       } else {
         setTimeout(play, interval); // recursive call here, interval being the delay
       }
